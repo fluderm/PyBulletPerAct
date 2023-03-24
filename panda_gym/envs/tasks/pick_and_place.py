@@ -28,63 +28,69 @@ class PickAndPlace(Task):
         self.goal_range_high = np.array([goal_xy_range / 2, goal_xy_range / 2, 0]) #goal_z_range])
         self.obj_range_low = np.array([-obj_xy_range / 2, -obj_xy_range / 2, 0])
         self.obj_range_high = np.array([obj_xy_range / 2, obj_xy_range / 2, 0])
+        self.glass_orientation = np.array([0.7071067811865475, 0.0, 0.0, 0.7071067811865476])
+
         with self.sim.no_rendering():
             self._create_scene()
             self.sim.place_visualizer(target_position=np.zeros(3), distance=0.9, yaw=45, pitch=-30)
+
 
     def _create_scene(self) -> None:
         """Create the scene."""
         self.sim.create_plane(z_offset=-0.4)
         self.sim.create_table(length=2.1, width=1.7, height=0.4, x_offset=-0.3) #(length=1.1, width=0.7, height=0.4, x_offset=-0.3)
-        self.sim.create_cylinder(
+        #self.sim.create_cylinder(
+        #    body_name = 'object',
+        #    radius = self.object_size,
+        #    height = 5*self.object_size,
+        #    mass = 5.0,
+        #    position = np.array([0.0, 0.0, 5*self.object_size / 2]),
+        #    rgba_color = np.array([0.0, 0.0, 1.0, 1.0]),
+        #)
+        #self.sim.create_box(
+        #    body_name="target",
+        #    half_extents=np.ones(3) * self.object_size / 2,
+        #    mass=0.0,
+        #    ghost=True,
+        #    position=np.array([0.0, 0.0, 0.05]),
+        #    rgba_color=np.array([0.1, 0.9, 0.1, 0.3]),
+        #)
+        self.sim.create_glass(
             body_name = 'object',
-            radius = self.object_size,
-            height = 5*self.object_size,
-            mass = 5.0,
-            position = np.array([0.0, 0.0, 5*self.object_size / 2]),
-            rgba_color = np.array([0.0, 0.0, 1.0, 1.0]),
-        )
-        self.sim.create_box(
-            body_name="target",
-            half_extents=np.ones(3) * self.object_size / 2,
-            mass=0.0,
-            ghost=True,
-            position=np.array([0.0, 0.0, 0.05]),
-            rgba_color=np.array([0.1, 0.9, 0.1, 0.3]),
-        )
-        self.sim.create_glass()
-
-        self.sim.create_sphere(
-            body_name = 's1',
-            radius = 0.01,
+            wi = 0.04, 
+            h = 0.04,
             mass = 1.0,
-            position = np.array([0.0, 0.3, 1.0+0.0]),
-            rgba_color = np.array([1.0,0.0,0.0,1.0]),
+            position = np.zeros(3),
+            rgba_color= np.array([0,0,1,0.75]),
+            orient = self.glass_orientation
         )
+
+        self.sim.create_glass(
+            body_name = 'target',
+            wi = 0.05, 
+            h = 0.02,
+            mass = 1.0,
+            position = np.zeros(3),
+            rgba_color= np.array([1,0,0,0.01]),
+            orient = self.glass_orientation
+        )
+
+        self.sphere_rad = 0.01
+        self.sph = 2
+        self.tot_spheres = self.sph**3
+
+        for i in range(self.sph):
+            for j in range(self.sph):
+                for k in range(self.sph):
+                    offset =  np.array([i,j,k])*(2*self.sphere_rad+0.01)
+                    self.sim.create_sphere(
+                        body_name = 's'+str(i)+str(j)+str(k),
+                        radius = self.sphere_rad,
+                        mass = 0.1,
+                        position = np.array([0.0, 0.0, 0.1]) + offset,
+                        rgba_color = np.array([1.0,0.0,0.0,1.0]),
+                    )
         
-        self.sim.create_sphere(
-            body_name = 's2',
-            radius = 0.01,
-            mass = 1.0,
-            position = np.array([0.0, 0.3+0.02, 1.0+0.02]),
-            rgba_color = np.array([1.0,0.0,0.0,1.0]),
-        )
-
-        self.sim.create_sphere(
-            body_name = 's3',
-            radius = 0.01,
-            mass = 1.0,
-            position = np.array([0.0, 0.3-0.02, 1.0+0.02]),
-            rgba_color = np.array([1.0,0.0,0.0,1.0]),
-        )
-        self.sim.create_sphere(
-            body_name = 's4',
-            radius = 0.01,
-            mass = 1.0,
-            position = np.array([0.02, 0.3-0.02, 1.0+0.02]),
-            rgba_color = np.array([1.0,0.0,0.0,1.0]),
-        )
-
     def get_obs(self) -> np.ndarray:
         # position, rotation of the object
         object_position = self.sim.get_base_position("object")
@@ -106,23 +112,41 @@ class PickAndPlace(Task):
         #switch for reach goal:
         self.goal = self._sample_goal()
         self.original_pos = self.goal.copy()
-        object_position = self._sample_object()
-        self.sim.set_base_pose("target", object_position, np.array([0.0, 0.0, 0.0, 1.0]))
-        self.sim.set_base_pose("object", self.goal, np.array([0.0, 0.0, 0.0, 1.0]))
+        self.object_position = self._sample_object()
+
+        while np.sqrt(np.sum((self.object_position-self.goal)**2)) < 2*0.1:
+            self.object_position = self._sample_object()
+
+        self.sim.set_base_pose("target", self.goal, self.glass_orientation)
+        self.sim.set_base_pose("object", self.object_position, self.glass_orientation)
+
+        for i in range(self.sph):
+            for j in range(self.sph):
+                for k in range(self.sph):
+                    offset = np.array([i,j,k])*(2*self.sphere_rad+0.001) + np.array([0,0,0.06])
+                    self.sim.set_base_pose(
+                        's'+str(i)+str(j)+str(k), 
+                        self.object_position+offset, 
+                        np.array([0,0,0,1])
+                        )
+
+
+        
 
     def _sample_goal(self) -> np.ndarray:
         """Sample a goal."""
-        goal = np.array([0.0, 0.0, 5*self.object_size / 2])  # z offset for the cube center
+        goal = np.array([0.0, 0.0, 0])  # z offset for the cube center
         noise = self.np_random.uniform(self.goal_range_low, self.goal_range_high)
-        if self.np_random.random() < 0.3:
-            noise[2] = 0.0
+        #if self.np_random.random() < 0.3:
+        noise[2] = 0.0
         goal += noise
         return goal
 
     def _sample_object(self) -> np.ndarray:
         """Randomize start position of object."""
-        object_position = np.array([0.0, 0.0, 5*self.object_size / 2])
+        object_position = np.array([0.0, 0.0, 0.0])
         noise = self.np_random.uniform(self.obj_range_low, self.obj_range_high)
+        noise[2]=0.0
         object_position += noise
         return object_position
 
