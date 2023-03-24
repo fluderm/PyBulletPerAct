@@ -1435,28 +1435,38 @@ class PyBullet:
             collision_kwargs=collision_kwargs,
         )
 
-    def create_glass(self):
+    def create_glass(
+        self, 
+        body_name: str,
+        wi: float, 
+        h: float,
+        mass: float,
+        position: np.ndarray,
+        rgba_color: Optional[np.ndarray] = np.zeros(4),
+        orient: Optional[np.ndarray] = np.array([0.7071067811865475, 0.0, 0.0, 0.7071067811865476])
+    ) -> None:
+
         tool_visual = self.physics_client.createVisualShape(
         shapeType=p.GEOM_MESH, 
         fileName="plastic_coffee_cup.obj", 
-        meshScale=[0.1]*3, 
-        rgbaColor=[1, 1, 1, 0.1], 
-        #physicsClientId=10
-        )
-      
-        tool_collision = self.physics_client.createCollisionShape(
-        shapeType=p.GEOM_MESH, 
-        fileName= "plastic_coffee_cup_vhacd.obj",
-        meshScale=[0.1]*3, 
+        meshScale=[wi,h,wi], 
+        rgbaColor=rgba_color, 
         #physicsClientId=10
         )
 
-        tool = self.physics_client.createMultiBody(
-        baseMass=1, 
+        tool_collision = self.physics_client.createCollisionShape(
+        shapeType=p.GEOM_MESH, 
+        fileName= "plastic_coffee_cup_vhacd.obj",
+        meshScale=[wi,h,wi], 
+        #physicsClientId=10
+        )
+
+        self._bodies_idx[body_name] = self.physics_client.createMultiBody(
+        baseMass = mass, 
         baseCollisionShapeIndex=tool_collision, 
         baseVisualShapeIndex=tool_visual, 
-        basePosition= np.array([0,0.3,0]), 
-        baseOrientation= np.array([0.7071067811865475, 0.0, 0.0, 0.7071067811865476]), 
+        basePosition= position, 
+        baseOrientation= orient, 
         useMaximalCoordinates=False, 
         #physicsClientId=10
         )
