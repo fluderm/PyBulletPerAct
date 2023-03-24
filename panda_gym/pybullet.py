@@ -594,7 +594,7 @@ class PyBullet:
             collision_kwargs=collision_kwargs,
         )
 
-    def create_glass(self):
+    def create_glass_old(self):
         tool_visual = self.physics_client.createVisualShape(
         shapeType=p.GEOM_MESH, 
         fileName="plastic_coffee_cup.obj", 
