@@ -20,7 +20,7 @@ setup(
     include_package_data=True,
     package_data={"panda_gym": ["version.txt"]},
     version=__version__,
-    install_requires=["gym", "pybullet", "numpy", "scipy"],
+    install_requires=['setuptools==65.5.0',"gym", "pybullet", "numpy", "scipy"],
     extras_require={
         "tests": ["pytest", "black", "pytype"],
         "extra": ["numpngw", "stable-baselines3"],
