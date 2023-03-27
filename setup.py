@@ -18,7 +18,7 @@ setup(
     url="https://github.com/qgallouedec/panda-gym",
     packages=find_packages(),
     include_package_data=True,
-    package_data={"panda_gym": ["version.txt"]},
+    package_data={"panda_gym": ["panda_gym.version.txt"]},
     version=__version__,
     install_requires=['setuptools==65.5.0',"gym", "pybullet", "numpy", "scipy"],
     extras_require={
