@@ -13,7 +13,7 @@ substantially to accommodate its observations and environment with the visual/vo
 Some of the major key points are:
 
 * We essentially completely change the pick-and-place environment (feel free to rename it, just be careful to change the registration in the 
-[__init__ file](https://github.com/fluderm/PyBulletPerAct/panda_gym/__init__.py)).
+[__init__ file](https://github.com/fluderm/PyBulletPerAct/blob/main/panda_gym/__init__.py)).
 The other environments are left unchanged from panda_gym 2.0.0.
 
 * We add two glasses (red and blue) to the environment, where the blue glass is the 'object' and the red one is the 'target'. Furthermore, 
@@ -22,13 +22,13 @@ are at arbitrary locations upon initialization on the table and the task is to p
 the red cup. The idea is to simulate the pouring of powder as asked by the client.
 
 * If you want to apply a reinforcement learning pipeline you should modify the reward functions in the 
-[file](https://github.com/fluderm/PyBulletPerAct/panda_gym/envs/tasks/pick_and_place.py). 
+[file](https://github.com/fluderm/PyBulletPerAct/blob/main/panda_gym/envs/tasks/pick_and_place.py). 
 However, we would like to point out that reinforcement learning is very time and computing power consuming, and it's worthwhile investigating alternative
 approaches (e.g. PyBulletPerAct).
 
-* In [Pybullet.py](https://github.com/fluderm/PyBulletPerAct/panda_gym/pybullet.py), we 
+* In [Pybullet.py](https://github.com/fluderm/PyBulletPerAct/blob/main/panda_gym/pybullet.py), we 
 substantially and carefully changed the rendering such that it is compatible with 
-[Create_and_save_demo.ipynb](https://github.com/fluderm/PyBulletPerAct/Create_and_save_demo.ipynb).
+[Create_and_save_demo.ipynb](https://github.com/fluderm/PyBulletPerAct/blob/main/Create_and_save_demo.ipynb).
 Furthermore, we add functions that allow for changing the environment such that we can simulate pouring small spheres.
 
 Some additional remarks about panda_gym and simulations in general:
@@ -47,7 +47,7 @@ The colab files should be future-proof now, but even within the short time of th
 ## Create_and_save_demo Colab
 
 The colab file 
-[Create_and_save_demo.ipynb](https://github.com/fluderm/PyBulletPerAct/Create_and_save_demo.ipynb)
+[Create_and_save_demo.ipynb](https://github.com/fluderm/PyBulletPerAct/blob/main/Create_and_save_demo.ipynb)
 implements a pipeline that easily lets you create and save demos in a way that the saved demos of the modified panda_gym and PyBullet environment
 are compatible with PerAct (and more broadly with RLBench).
 
@@ -66,7 +66,7 @@ Notice however, that one of the benefits of PerAct is that it's not very data in
 
 ## PyBulletPerAct Colab
 
-Finally, the [PyBulletPerAct.ipynb](https://github.com/fluderm/PyBulletPerAct/PyBulletPerAct.ipynb) contains the 
+Finally, the [PyBulletPerAct.ipynb](https://github.com/fluderm/PyBulletPerAct/blob/main/PyBulletPerAct.ipynb) contains the 
 part of the pipeline which trains PyBulletPerAct on the data generated in Create_and_save_demo. We've carefully code from various sources and made sure
 all conventions are compatible. In particular we create a voxelized environment of our panda_gym which serves as the action and observation space of PerAct.
 
