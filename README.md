@@ -86,8 +86,7 @@ This should give you a good starting point.
 
 ## To do:
 
-A lot of our time was spent trying to figure out the goal for our group. In order to help you with that and give you explicit direction
-(which we were lacking), let me provide you with some (to me) reasonable next steps:
+A lot of our time was spent trying to figure out the goal for our group. In order to help you with that and give you explicit direction, let me provide you with some (to me) reasonable next steps:
 
 * First, I would suggest trying to understand the code we provide in this repo. Personally, I think this is a very good approach and seems suitable to
 making progress given limited resources.
