@@ -23,7 +23,7 @@ the red cup. The idea is to simulate the pouring of powder as asked by the clien
 
 * If you want to apply a reinforcement learning pipeline you should modify the reward functions in the 
 [file](https://github.com/fluderm/PyBulletPerAct/blob/main/panda_gym/envs/tasks/pick_and_place.py). 
-However, we would like to point out that reinforcement learning is very time and computing power consuming, and it's worthwhile investigating alternative
+However, we would like to point out that reinforcement learning is very time and power consuming, and it's worthwhile investigating alternative
 approaches (e.g. PyBulletPerAct).
 
 * In [Pybullet.py](https://github.com/fluderm/PyBulletPerAct/blob/main/panda_gym/pybullet.py), we 
@@ -34,14 +34,14 @@ Furthermore, we add functions that allow for changing the environment such that 
 Some additional remarks about panda_gym and simulations in general:
 
 * We chose panda_gym and PyBullet, as it ran without issues on Colab. We tried various other simulation environments and a lot of them require 
-more computing power than we had access to. In particular, Gazebo seemed quite troublesome. A decent alternatively (on linux) would be 
+more computing power than we had access to. A decent alternatively (on linux) would be 
 [RLBench](https://sites.google.com/view/rlbench), which is based on 
 [PyRep](https://github.com/stepjam/PyRep) and [CoppeliaSim](https://www.coppeliarobotics.com/). 
 Unfortunately, PyRep only works on linux at the time of this writing.
 
 * Our starting point is panda_gym version 2.0.0 (rather than the updated versions). The reason for this is that it is compatible with 
 [stable-baseline3](https://stable-baselines3.readthedocs.io/en/master/) which we used in earlier reinforcement learning approaches. 
-The colab files should be future-proof now, but even within the short time of the fellowship some dependencies broke.
+The colab files should be future-proof now (you can safely ignore error messages when installing packages).
 
 
 ## Create_and_save_demo Colab
@@ -59,16 +59,14 @@ Some Remarks:
 * I would further suggest using more sophisticated motion planning (see, e.g. [here](https://github.com/yijiangh/pybullet_planning/issues/7) 
 for an example). In particular it is crucial for real-life implementations that there's a way to avoid collisions with other objects in the environment (the current, naive inverse kinematics implementation needs some modification to account for that).
 Currently, the approach of the gripper is to simply take a straight line from current location to target. 
-There are quite a lot of fancy implementations of such motion-planners and it's probably worthwhile investigating it a bit more.
-* It is quite straightforward to parallelize the demo creation and saving. So it's probably worthwhile if you want to quickly create large datasets.
+There are quite a lot of fancy implementations of such motion-planners and it is probably worthwhile investigating it a bit more.
+* It is quite straightforward to parallelize the demo creation and saving, which might be worthwhile if you want to quickly create large datasets.
 Notice however, that one of the benefits of PerAct is that it's not very data intensive.
-
 
 ## PyBulletPerAct Colab
 
 Finally, the [PyBulletPerAct.ipynb](https://github.com/fluderm/PyBulletPerAct/blob/main/PyBulletPerAct.ipynb) contains the 
-part of the pipeline which trains PyBulletPerAct on the data generated in Create_and_save_demo. We've carefully code from various sources and made sure
-all conventions are compatible. In particular we create a voxelized environment of our panda_gym which serves as the action and observation space of PerAct.
+part of the pipeline which trains PyBulletPerAct on the data generated in Create_and_save_demo. We've carefully combined code from various sources and made sure all conventions are compatible. In particular, we create a voxelized environment of our panda_gym which serves as the action and observation space of PerAct.
 
 Some remarks:
 
@@ -76,22 +74,18 @@ Some remarks:
 pipeline effectively independent of camera positioning, etc. (for instance RT-1 by Google is dependent on a fixed camera and camera angle). Furthermore,
 discretizing the environment improves training speed and requires less data and you can get decent results within ~ an hour of training on Colab pro.
 There are many other novel approaches to robot training, but a lot of them -- while really cool -- require expensive computing resources we did not have.
-In general, I would stay away from anything dubbed "reinforcement learning", as it seems miles behind transformer-type approaches.
-* It is worthwhile going through the code and understanding what it's doing.
-* In particular, I would suggest playing around with the voxelization. In particular, if you eventually want PerAct to pour a certain amount of spheres,
-the voxel size better be able to discern between spheres (at least approximately). In particular, my feeling is to limit the voxel bounds to a smaller
-volume.
+In general, I would stay away from anything dubbed "reinforcement learning", as it seems miles behind transformer-type approaches (of course the goals are somewhat disparate).
+* If you eventually want PerAct to pour a certain amount of spheres, the voxel size better be able to discern between spheres (at least approximately). More precisely, my feeling is to limit the voxel bounds to a smaller volume.
 * If you're just starting up, I've shared data (for "pick and place") generated by myself as well as the weights of a pretrained model for "pick and place".
 This should give you a good starting point.
 
 ## To do:
 
-A lot of our time was spent trying to figure out the goal for our group. In order to help you with that and give you explicit direction, let me provide you with some (to me) reasonable next steps:
+Let me provide some reasonable next steps:
 
-* First, I would suggest trying to understand the code we provide in this repo. Personally, I think this is a very good approach and seems suitable to
-making progress given limited resources.
+* Upon quite a bit of research into the state-of-the-art robotics literature, I think the approach presented in this repo is reasonable and seems suitable to making progress given limited resources and the specifics of the problem.
 
-* Then, I would suggest to change the modified panda_gym environment so that the blue cup with the spheres in it is in perfect position to do pouring 
+* I would suggest to change the modified panda_gym environment so that the blue cup with the spheres in it is in perfect position to do pouring 
 (i.e. tilting the 6th joint of the panda robot to a certain angle). Test out how well it works for pouring (if they go into the red cup and jump out 
 maybe consider changing the sphere masses or making the red cup larger). Once pouring seems reasonable, start generating lots of data where the shifted
 angle is picked arbitrarily and you record how many spheres were poured successfully (there's already a function for that). Once you've generated
@@ -106,7 +100,7 @@ it near the red one and pour x spheres from the blue into the red one". I think 
 * Once these things work reliably you can increase the difficulty by adding obstacles to the environment, more cups with different amount of spheres,
 etc. and have fun exploring the limitations.
 
-If you run into any trouble or want some help, feel free to reach out to [me](mailto:fluderm@gmail.com)
+If you run into any trouble or want some help, feel free to reach out to [me](mailto:fluderm@gmail.com).
 
 
 
